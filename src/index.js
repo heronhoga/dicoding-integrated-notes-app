@@ -5,6 +5,7 @@ import "./style.css";
 
 const notesContainer = document.getElementById("notes-container");
 const loading = document.getElementById("loading");
+const content = document.getElementById("content");
 
 function createNoteElement(id, title, body, createdAt, archived) {
   const note = document.createElement("note-item");
@@ -25,13 +26,13 @@ function createNoteElement(id, title, body, createdAt, archived) {
   notesContainer.appendChild(note);
 }
 
-
 async function getNotes() {
   const url = "https://notes-api.dicoding.dev/v2/notes";
   loading.style.display = "block";
   try {
     const response = await fetch(url);
     loading.style.display = "none";
+    content.style.display = "block";
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
@@ -47,6 +48,7 @@ async function getNotes() {
 function createNote(data) {
   const url = "https://notes-api.dicoding.dev/v2/notes";
   loading.style.display = "block";
+  content.style.display = "none";
 
   return fetch(url, {
     method: "POST",
@@ -57,6 +59,7 @@ function createNote(data) {
   })
     .then((response) => {
       loading.style.display = "none";
+      content.style.display = "block";
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
@@ -75,10 +78,12 @@ function createNote(data) {
 function deleteNote(id, noteElement) {
   const url = `https://notes-api.dicoding.dev/v2/notes/${id}`;
   loading.style.display = "block";
+  content.style.display = "none";
 
   fetch(url, { method: "DELETE" })
     .then((res) => {
       loading.style.display = "none";
+      content.style.display = "block";
       if (!res.ok) throw new Error(`Failed to delete: ${res.status}`);
       noteElement.remove();
     })
@@ -87,7 +92,6 @@ function deleteNote(id, noteElement) {
       console.error(err.message);
     });
 }
-
 
 const notesData = await getNotes();
 
@@ -138,4 +142,3 @@ document.addEventListener("note-deleted", (e) => {
 
   deleteNote(id, noteElement);
 });
-
