@@ -59,6 +59,7 @@ class NoteForm extends HTMLElement {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      font-family: Arial, sans-serif;
     }
 
     input,

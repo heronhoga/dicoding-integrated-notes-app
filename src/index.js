@@ -1,5 +1,7 @@
 import "./components/note-item.js";
 import "./components/note-form.js";
+import "./components/note-header.js"
+import "./style.css"
 
 const notesContainer = document.getElementById("notes-container");
 

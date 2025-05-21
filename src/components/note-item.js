@@ -29,6 +29,7 @@ class NoteItem extends HTMLElement {
           margin-bottom: 1rem;
           border-radius: 10px;
           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          font-family: Arial, sans-serif;
         }
         h3 {
           margin: 0 0 0.5rem 0;
