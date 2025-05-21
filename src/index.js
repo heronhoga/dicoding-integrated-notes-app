@@ -4,6 +4,7 @@ import "./components/note-header.js";
 import "./style.css";
 
 const notesContainer = document.getElementById("notes-container");
+const loading = document.getElementById("loading");
 
 function createNoteElement(id, title, body, createdAt, archived) {
   const note = document.createElement("note-item");
@@ -12,13 +13,25 @@ function createNoteElement(id, title, body, createdAt, archived) {
   note.setAttribute("body", body);
   note.setAttribute("createdat", createdAt);
   note.setAttribute("archived", archived);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.style.marginTop = "10px";
+  deleteBtn.addEventListener("click", () => {
+    deleteNote(id, note);
+  });
+
+  note.appendChild(deleteBtn);
   notesContainer.appendChild(note);
 }
 
+
 async function getNotes() {
   const url = "https://notes-api.dicoding.dev/v2/notes";
+  loading.style.display = "block";
   try {
     const response = await fetch(url);
+    loading.style.display = "none";
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
@@ -33,7 +46,7 @@ async function getNotes() {
 
 function createNote(data) {
   const url = "https://notes-api.dicoding.dev/v2/notes";
-  console.log(data);
+  loading.style.display = "block";
 
   return fetch(url, {
     method: "POST",
@@ -43,6 +56,7 @@ function createNote(data) {
     body: JSON.stringify(data),
   })
     .then((response) => {
+      loading.style.display = "none";
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
@@ -57,6 +71,23 @@ function createNote(data) {
       console.error(error.message);
     });
 }
+
+function deleteNote(id, noteElement) {
+  const url = `https://notes-api.dicoding.dev/v2/notes/${id}`;
+  loading.style.display = "block";
+
+  fetch(url, { method: "DELETE" })
+    .then((res) => {
+      loading.style.display = "none";
+      if (!res.ok) throw new Error(`Failed to delete: ${res.status}`);
+      noteElement.remove();
+    })
+    .catch((err) => {
+      loading.style.display = "none";
+      console.error(err.message);
+    });
+}
+
 
 const notesData = await getNotes();
 
@@ -96,5 +127,15 @@ document.addEventListener("note-submitted", async (e) => {
     newNote.createdAt,
     newNote.archived
   );
+});
+
+document.addEventListener("note-deleted", (e) => {
+  const id = e.detail.id;
+  const noteElement = document.querySelector(`note-item[id="${id}"]`);
+  if (!id || !noteElement) return;
+
+  if (!confirm("Are you sure you want to delete this note?")) return;
+
+  deleteNote(id, noteElement);
 });
 
